@@ -1,10 +1,8 @@
 # Baseline: Clone Detection (Type III / IV)
 
-Pipeline reproducible para:
-- Tarea A: `is_clone` (0/1)
-- Tarea B: `clone_type` (`type_III` vs `type_IV`) usando solo positivos
+All Python for this pipeline lives in **`DataBaseProject/database_project.ipynb`** (single notebook: build dataset, reconstruct snippets, TF-IDF features, `DecisionTreeClassifier`, metrics, report).
 
-Este baseline usa un solo modelo: `DecisionTreeClassifier`.
+This folder only keeps **`requirements.txt`** for `%pip install -r baseline/requirements.txt` from the notebook.
 
 ## Requisitos
 
@@ -14,13 +12,7 @@ python -m pip install -r DataBaseProject/baseline/requirements.txt
 
 ## Ejecucion
 
-```bash
-python DataBaseProject/run_baseline.py \
-  --dataset-root DataBaseProject \
-  --metadata-file clone_pairs_dataset_metadata.csv \
-  --output-dir DataBaseProject/baseline_outputs \
-  --seed 42
-```
+Open `DataBaseProject/database_project.ipynb` in Jupyter, VS Code, or Google Colab (upload or clone the whole `DataBaseProject` directory, then `%cd` into it on Colab) and **Run all** cells.
 
 ## Que hace el pipeline
 
