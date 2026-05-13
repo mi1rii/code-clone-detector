@@ -8,7 +8,13 @@ import pandas as pd
 from scipy import sparse
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from .preprocessing import jaccard_similarity, overlap_ratio, preprocess_code, tokenize_python_code
+from .preprocessing import (
+    dice_similarity,
+    jaccard_similarity,
+    overlap_ratio,
+    preprocess_code,
+    tokenize_python_code,
+)
 
 
 def prepare_pair_text_fields(df: pd.DataFrame) -> pd.DataFrame:
@@ -77,12 +83,17 @@ def build_pair_features(df: pd.DataFrame, vectorizer: TfidfVectorizer) -> pd.Dat
         overlap_ratio(tokens_a, tokens_b)
         for tokens_a, tokens_b in zip(df["tokens_a"], df["tokens_b"])
     ]
+    dice_values = [
+        dice_similarity(tokens_a, tokens_b)
+        for tokens_a, tokens_b in zip(df["tokens_a"], df["tokens_b"])
+    ]
 
-    #consolidamos todas las features numericas en una sola tabla
+    #consolidamos todas las features numéricas en una sola tabla
     features_df = pd.DataFrame(
         {
             "cosine_tfidf": cosine_values,
             "jaccard_tokens": jaccard_values,
+            "dice_tokens": dice_values,
             "overlap_unique_tokens": overlap_values,
             "char_len_a": char_len_a,
             "char_len_b": char_len_b,

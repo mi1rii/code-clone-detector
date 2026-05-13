@@ -8,15 +8,28 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
+from sklearn.neural_network import MLPClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
-from .evaluate_baseline import evaluate_predictions, save_confusion_matrix_plot
+from .evaluate_baseline import (
+    evaluate_predictions,
+    save_confusion_matrix_plot,
+    save_roc_curve_plot,
+)
 from .utils import save_json
 
 
-def _build_models(class_weight, seed: int) -> dict[str, Any]:
-    #definimos los dos modelos base que vamos a comparar
-    return {
+def _build_models(
+    class_weight,
+    seed: int,
+    include_mlp: bool,
+    mlp_grid_search: bool,
+) -> dict[str, Any]:
+    #definimos los modelos base y activamos variantes de MLP según la configuración
+    models = {
         "logistic_regression": LogisticRegression(
             max_iter=2000,
             solver="liblinear",
@@ -31,6 +44,39 @@ def _build_models(class_weight, seed: int) -> dict[str, Any]:
             random_state=seed,
         ),
     }
+    if include_mlp:
+        if mlp_grid_search:
+            #probamos una grilla pequeña de hiperparámetros, como en la práctica de clase
+            mlp_param_grid = {
+                "mlpclassifier__hidden_layer_sizes": [(1,), (1, 1), (2, 2), (3, 3)],
+                "mlpclassifier__activation": ["identity", "logistic", "tanh", "relu"],
+                "mlpclassifier__max_iter": [200, 500],
+                "mlpclassifier__learning_rate_init": [0.001, 0.01, 0.1],
+            }
+            base_mlp = make_pipeline(
+                StandardScaler(),
+                MLPClassifier(random_state=seed),
+            )
+            models["mlp_gridsearch"] = GridSearchCV(
+                estimator=base_mlp,
+                param_grid=mlp_param_grid,
+                scoring="f1_weighted",
+                cv=3,
+                n_jobs=-1,
+            )
+        else:
+            #dejamos una configuración fija de MLP para una corrida rápida
+            models["mlp"] = make_pipeline(
+                StandardScaler(),
+                MLPClassifier(
+                    hidden_layer_sizes=(3, 3),
+                    activation="relu",
+                    max_iter=500,
+                    learning_rate_init=0.01,
+                    random_state=seed,
+                ),
+            )
+    return models
 
 
 def train_and_evaluate_task(
@@ -45,9 +91,17 @@ def train_and_evaluate_task(
     class_weight,
     output_dir: Path,
     seed: int,
+    include_mlp: bool = False,
+    mlp_grid_search: bool = False,
+    save_roc_curves: bool = False,
 ) -> dict[str, Any]:
     #entrenamos y evaluamos ambos modelos sobre val y test
-    models = _build_models(class_weight=class_weight, seed=seed)
+    models = _build_models(
+        class_weight=class_weight,
+        seed=seed,
+        include_mlp=include_mlp,
+        mlp_grid_search=mlp_grid_search,
+    )
 
     #organizamos carpetas de salida por tipo de artefacto
     models_dir = output_dir / "models"
@@ -69,13 +123,17 @@ def train_and_evaluate_task(
         joblib.dump(model, models_dir / f"{task_name}_{model_name}.joblib")
 
         model_metrics: dict[str, Any] = {}
+        if hasattr(model, "best_params_"):
+            #si usamos GridSearch, guardamos la mejor combinación encontrada
+            model_metrics["best_params"] = model.best_params_
         for split_name, (X_split, y_split) in {
             "val": (X_val, y_val),
             "test": (X_test, y_test),
         }.items():
             #predecimos y calculamos metricas por split
             y_pred = model.predict(X_split)
-            metrics = evaluate_predictions(y_split, y_pred, labels=labels)
+            y_proba = model.predict_proba(X_split) if hasattr(model, "predict_proba") else None
+            metrics = evaluate_predictions(y_split, y_pred, labels=labels, y_proba=y_proba)
             model_metrics[split_name] = metrics
 
             #guardamos matriz de confusion como imagen
@@ -86,6 +144,15 @@ def train_and_evaluate_task(
                 title=f"{task_name} - {model_name} ({split_name})",
                 output_path=plots_dir / f"{task_name}_{model_name}_{split_name}_cm.png",
             )
+            if save_roc_curves and y_proba is not None and len(labels) == 2:
+                #en binario guardamos la curva ROC para comparar visualmente modelos
+                save_roc_curve_plot(
+                    y_true=y_split,
+                    y_score=np.asarray(y_proba)[:, 1],
+                    output_path=plots_dir / f"{task_name}_{model_name}_{split_name}_roc.png",
+                    title=f"{task_name} - {model_name} ({split_name}) ROC",
+                    pos_label=labels[1],
+                )
 
             #exportamos predicciones para auditoria posterior
             pred_df = pd.DataFrame(
@@ -95,6 +162,11 @@ def train_and_evaluate_task(
                     "y_pred": y_pred,
                 }
             )
+            if y_proba is not None:
+                #guardamos probabilidades por clase para facilitar análisis posterior
+                proba_array = np.asarray(y_proba)
+                for class_idx, class_label in enumerate(labels):
+                    pred_df[f"proba_{class_label}"] = proba_array[:, class_idx]
             pred_df.to_csv(
                 preds_dir / f"{task_name}_{model_name}_{split_name}_predictions.csv",
                 index=False,

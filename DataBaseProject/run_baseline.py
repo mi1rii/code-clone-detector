@@ -68,6 +68,9 @@ def _train_task_a(
     config: BaselineConfig,
     output_dir: Path,
     logger: logging.Logger,
+    include_mlp: bool,
+    mlp_grid_search: bool,
+    teacher_style_metrics: bool,
 ) -> dict:
     #entrenamos la tarea binaria clone vs non clone
     split = grouped_train_val_test_split(
@@ -144,6 +147,9 @@ def _train_task_a(
         class_weight=class_weight,
         output_dir=output_dir / "task_a_artifacts",
         seed=config.seed,
+        include_mlp=include_mlp,
+        mlp_grid_search=mlp_grid_search,
+        save_roc_curves=teacher_style_metrics,
     )
     summary["class_imbalance_ratio_train"] = ratio
     summary["class_distribution_train"] = class_distribution(train_df["is_clone"])
@@ -155,6 +161,8 @@ def _train_task_b(
     config: BaselineConfig,
     output_dir: Path,
     logger: logging.Logger,
+    include_mlp: bool,
+    mlp_grid_search: bool,
 ) -> dict:
     #entrenamos la tarea multiclasica solo en positivos para distinguir type_iii y type_iv
     positives_df = prepared_df[prepared_df["is_clone"] == 1].copy()
@@ -233,6 +241,8 @@ def _train_task_b(
         class_weight=class_weight,
         output_dir=output_dir / "task_b_artifacts",
         seed=config.seed,
+        include_mlp=include_mlp,
+        mlp_grid_search=mlp_grid_search,
     )
     summary["class_imbalance_ratio_train"] = ratio
     summary["class_distribution_train"] = class_distribution(train_df["clone_type"])
@@ -249,8 +259,24 @@ def _build_markdown_report(
     drop_reasons: dict,
     task_a_summary: dict,
     task_b_summary: dict,
+    include_mlp: bool,
+    mlp_grid_search: bool,
+    teacher_profile_enabled: bool,
 ) -> None:
     #dejamos un reporte breve y legible con datos de reconstruccion y rendimiento
+    model_lines = [
+        "- Models compared: LogisticRegression and DecisionTreeClassifier.",
+    ]
+    if include_mlp:
+        #si activamos MLP, lo documentamos en el reporte para dejar claro el alcance de la corrida
+        model_lines.append("- Additional model: MLPClassifier.")
+    if mlp_grid_search:
+        #si activamos búsqueda, dejamos rastro de que comparamos hiperparámetros
+        model_lines.append("- Hyperparameter search: GridSearchCV over MLP (f1_weighted).")
+    if teacher_profile_enabled:
+        #si usamos el perfil docente, reportamos que también generamos ROC/AUC
+        model_lines.append("- Teacher profile enabled: ROC/AUC plots for Task A.")
+
     lines = [
         "# Baseline Report",
         "",
@@ -265,8 +291,8 @@ def _build_markdown_report(
         "- Pair reconstruction from `file_path` + `snippet_index_a/snippet_index_b`.",
         "- Code preprocessing: comment removal + whitespace normalization.",
         "- Tokenization: Python `tokenize` module.",
-        "- Pair features: TF-IDF cosine + lexical/length statistics.",
-        "- Models compared: LogisticRegression and DecisionTreeClassifier.",
+        "- Pair features: TF-IDF cosine + lexical/length statistics (Jaccard, Dice, overlap).",
+        *model_lines,
         "- Grouped split by `problem_id` to prevent leakage.",
         "",
         "## Task A (`is_clone`)",
@@ -318,6 +344,24 @@ def main() -> None:
         default=1.5,
         help="If max/min class ratio in train >= threshold, use class_weight='balanced'.",
     )
+    parser.add_argument(
+        "--teacher-profile",
+        action="store_true",
+        help=(
+            "Align baseline with class practices from notebooks: include MLP model, "
+            "ROC/AUC outputs, and optional parameter search defaults."
+        ),
+    )
+    parser.add_argument(
+        "--include-mlp",
+        action="store_true",
+        help="Include MLPClassifier as an additional baseline model.",
+    )
+    parser.add_argument(
+        "--mlp-grid-search",
+        action="store_true",
+        help="Run GridSearchCV over MLP hyperparameters (slower).",
+    )
     args = parser.parse_args()
 
     #consolidamos configuracion de la corrida
@@ -341,6 +385,16 @@ def main() -> None:
     logger.info("Starting baseline pipeline.")
     logger.info("Dataset root: %s", config.dataset_root)
     logger.info("Metadata CSV: %s", config.metadata_path)
+    teacher_profile_enabled = bool(args.teacher_profile)
+    #definimos este perfil para ejecutar el baseline con el patrón de clase de la profesora
+    include_mlp = bool(args.include_mlp or teacher_profile_enabled)
+    mlp_grid_search = bool(args.mlp_grid_search or teacher_profile_enabled)
+    logger.info(
+        "Teacher profile=%s | include_mlp=%s | mlp_grid_search=%s",
+        teacher_profile_enabled,
+        include_mlp,
+        mlp_grid_search,
+    )
 
     #cargamos metadata y verificamos su esquema
     metadata_df = load_metadata_csv(config.metadata_path)
@@ -390,8 +444,23 @@ def main() -> None:
     logger.info("Preprocessing completed on %d rows.", len(prepared_df))
 
     #entrenamos ambas tareas del baseline
-    task_a_summary = _train_task_a(prepared_df, config=config, output_dir=output_dir, logger=logger)
-    task_b_summary = _train_task_b(prepared_df, config=config, output_dir=output_dir, logger=logger)
+    task_a_summary = _train_task_a(
+        prepared_df,
+        config=config,
+        output_dir=output_dir,
+        logger=logger,
+        include_mlp=include_mlp,
+        mlp_grid_search=mlp_grid_search,
+        teacher_style_metrics=teacher_profile_enabled,
+    )
+    task_b_summary = _train_task_b(
+        prepared_df,
+        config=config,
+        output_dir=output_dir,
+        logger=logger,
+        include_mlp=include_mlp,
+        mlp_grid_search=mlp_grid_search,
+    )
 
     #generamos tablas comparativas por tarea y consolidado
     task_a_comp = comparison_table(task_a_summary["results"])
@@ -416,6 +485,9 @@ def main() -> None:
         drop_reasons=(dropped_df["drop_reason"].value_counts().to_dict() if not dropped_df.empty else {}),
         task_a_summary=task_a_summary,
         task_b_summary=task_b_summary,
+        include_mlp=include_mlp,
+        mlp_grid_search=mlp_grid_search,
+        teacher_profile_enabled=teacher_profile_enabled,
     )
     logger.info("Baseline report saved to %s", output_dir / "reports" / "baseline_report.md")
     logger.info("Pipeline completed successfully.")

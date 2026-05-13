@@ -98,3 +98,15 @@ def overlap_ratio(tokens_a: Iterable[str], tokens_b: Iterable[str]) -> float:
     if min_size == 0:
         return 0.0
     return float(len(set_a & set_b) / min_size)
+
+
+def dice_similarity(tokens_a: Iterable[str], tokens_b: Iterable[str]) -> float:
+    #calculamos el coeficiente de Dice para mantener el mismo patrón de similitud de clase
+    set_a = set(tokens_a)
+    set_b = set(tokens_b)
+    if not set_a and not set_b:
+        return 1.0
+    denom = len(set_a) + len(set_b)
+    if denom == 0:
+        return 0.0
+    return float(2.0 * len(set_a & set_b) / denom)

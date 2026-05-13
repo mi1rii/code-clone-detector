@@ -19,13 +19,13 @@
 - Train class distribution: `{'1': 5787, '0': 2967}`
 - Imbalance ratio (train): **1.9505**
 - Best model by validation F1-macro: **decision_tree**
-- Best validation F1-macro: **0.8799**
+- Best validation F1-macro: **0.8824**
 
 ## Task B (`clone_type` on positives)
 - Train class distribution: `{'type_IV': 4037, 'type_III': 1751}`
 - Imbalance ratio (train): **2.3055**
-- Best model by validation F1-macro: **decision_tree**
-- Best validation F1-macro: **0.7497**
+- Best model by validation F1-macro: **mlp_gridsearch**
+- Best validation F1-macro: **0.7720**
 
 ## Reproducibility
 - Random seed: **42**
