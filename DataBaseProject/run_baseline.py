@@ -355,7 +355,7 @@ def main() -> None:
     parser.add_argument(
         "--include-mlp",
         action="store_true",
-        help="Include MLPClassifier as an additional baseline model.",
+        help="Deprecated: MLP is always enabled in this baseline.",
     )
     parser.add_argument(
         "--mlp-grid-search",
@@ -387,7 +387,7 @@ def main() -> None:
     logger.info("Metadata CSV: %s", config.metadata_path)
     reference_profile_enabled = bool(args.reference_profile)
     #definimos este perfil para ejecutar el baseline con el patrón de clase de la profesora
-    include_mlp = bool(args.include_mlp or reference_profile_enabled)
+    include_mlp = True
     mlp_grid_search = bool(args.mlp_grid_search or reference_profile_enabled)
     logger.info(
         "reference profile=%s | include_mlp=%s | mlp_grid_search=%s",

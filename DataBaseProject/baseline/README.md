@@ -4,7 +4,7 @@ Pipeline reproducible para:
 - Tarea A: `is_clone` (0/1)
 - Tarea B: `clone_type` (`type_III` vs `type_IV`) usando solo positivos
 
-Incluye un perfil opcional tipo clase (`--reference-profile`) basado en prácticas de:
+Incluye un perfil de referencia (`--reference-profile`) basado en prácticas conocidas de:
 - Árboles de decisión
 - Métricas por clase + `classification_report`
 - Curvas ROC/AUC
@@ -50,7 +50,7 @@ python DataBaseProject/run_baseline.py \
 7. Entrena y compara:
    - `LogisticRegression`
    - `DecisionTreeClassifier`
-   - `MLPClassifier` (opcional)
+   - `MLPClassifier` (siempre activo)
 8. Guarda modelos, métricas, predicciones, matrices de confusión y reporte final.
 9. En binario (`is_clone`) genera ROC y AUC cuando hay probabilidades.
 
@@ -63,3 +63,4 @@ python DataBaseProject/run_baseline.py \
 - `baseline_outputs/task_b_artifacts/**`
 - `baseline_outputs/metrics/*.csv|*.json`
 - `baseline_outputs/reports/baseline_report.md`
+
