@@ -1,0 +1,14 @@
+{
+  "strategy": "oversample",
+  "target_col": "clone_type",
+  "rows_before": 5788,
+  "class_distribution_before": {
+    "type_IV": 4037,
+    "type_III": 1751
+  },
+  "rows_after": 8074,
+  "class_distribution_after": {
+    "type_III": 4037,
+    "type_IV": 4037
+  }
+}

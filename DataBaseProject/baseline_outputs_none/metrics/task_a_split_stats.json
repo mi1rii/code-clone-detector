@@ -1,0 +1,31 @@
+{
+  "split_stats": [
+    {
+      "split": "test",
+      "rows": 1859,
+      "unique_groups": 823,
+      "class_distribution": {
+        "1": 1230,
+        "0": 629
+      }
+    },
+    {
+      "split": "train",
+      "rows": 8754,
+      "unique_groups": 3838,
+      "class_distribution": {
+        "1": 5787,
+        "0": 2967
+      }
+    },
+    {
+      "split": "val",
+      "rows": 1871,
+      "unique_groups": 823,
+      "class_distribution": {
+        "1": 1236,
+        "0": 635
+      }
+    }
+  ]
+}
