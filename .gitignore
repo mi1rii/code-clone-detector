@@ -1,0 +1,10 @@
+.venv/
+.DS_Store
+__pycache__/
+*.py[cod]
+
+# Generated when you run the notebook
+baseline_outputs/
+clone_pairs_dataset.csv
+clone_pairs_dataset_metadata.csv
+clone_pairs_issues.csv
