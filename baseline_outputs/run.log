@@ -1,0 +1,204 @@
+2026-05-13 11:51:46,109 | INFO | Starting baseline pipeline.
+2026-05-13 11:51:46,109 | INFO | Dataset root: /Users/mii1rii_macbook_2024/code-clone-detector
+2026-05-13 11:51:46,110 | INFO | Metadata CSV: /Users/mii1rii_macbook_2024/code-clone-detector/clone_pairs_dataset_metadata.csv
+2026-05-13 11:51:46,110 | INFO | Model configuration: decision_tree only
+2026-05-13 11:51:46,110 | INFO | Train balance strategy: undersample
+2026-05-13 11:51:46,123 | INFO | Loaded metadata rows: 12484
+2026-05-13 11:51:46,128 | INFO | Metadata cleaning: valid_rows=12484 | invalid_rows=0
+2026-05-13 11:51:46,972 | INFO | Reconstruction summary: {'metadata_rows': 12484, 'reconstructed_rows': 12484, 'dropped_rows': 0, 'drop_reasons': {}}
+2026-05-13 11:51:47,110 | INFO | Saved reconstructed dataset: /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs/datasets/reconstructed_pairs.csv
+2026-05-13 11:51:47,110 | INFO | Saved dropped rows dataset: /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs/datasets/dropped_rows.csv
+2026-05-13 11:51:51,364 | INFO | Preprocessing completed on 12484 rows.
+2026-05-13 11:51:52,751 | INFO | Task A split statistics (`is_clone`):
+2026-05-13 11:51:52,752 | INFO |   test | rows=1859 | unique_problem_id=823 | class_dist={'1': 1230, '0': 629}
+2026-05-13 11:51:52,752 | INFO |   train | rows=8754 | unique_problem_id=3838 | class_dist={'1': 5787, '0': 2967}
+2026-05-13 11:51:52,752 | INFO |   val | rows=1871 | unique_problem_id=823 | class_dist={'1': 1236, '0': 635}
+2026-05-13 11:51:52,771 | INFO | Task A balancing: {'strategy': 'undersample', 'target_col': 'is_clone', 'rows_before': 8754, 'class_distribution_before': {'1': 5787, '0': 2967}, 'rows_after': 5934, 'class_distribution_after': {'1': 2967, '0': 2967}}
+2026-05-13 11:51:52,772 | INFO | Task A class imbalance ratio (train): 1.0000 | class_weight=None
+2026-05-13 11:51:55,987 | INFO | Task B split statistics (`clone_type` in positives):
+2026-05-13 11:51:55,987 | INFO |   test | rows=1240 | unique_problem_id=823 | class_dist={'type_IV': 865, 'type_III': 375}
+2026-05-13 11:51:55,988 | INFO |   train | rows=5788 | unique_problem_id=3838 | class_dist={'type_IV': 4037, 'type_III': 1751}
+2026-05-13 11:51:55,988 | INFO |   val | rows=1225 | unique_problem_id=822 | class_dist={'type_IV': 854, 'type_III': 371}
+2026-05-13 11:51:56,001 | INFO | Task B balancing: {'strategy': 'undersample', 'target_col': 'clone_type', 'rows_before': 5788, 'class_distribution_before': {'type_IV': 4037, 'type_III': 1751}, 'rows_after': 3502, 'class_distribution_after': {'type_III': 1751, 'type_IV': 1751}}
+2026-05-13 11:51:56,002 | INFO | Task B class imbalance ratio (train): 1.0000 | class_weight=None
+2026-05-13 11:51:57,397 | INFO | Baseline report saved to /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs/reports/baseline_report.md
+2026-05-13 11:51:57,397 | INFO | Pipeline completed successfully.
+2026-05-13 12:15:16,237 | INFO | ======================================================================
+2026-05-13 12:15:16,270 | INFO | Pipeline Clone Detection Baseline
+2026-05-13 12:15:16,275 | INFO | ======================================================================
+2026-05-13 12:15:16,277 | INFO | Dataset root: /Users/mii1rii_macbook_2024/code-clone-detector
+2026-05-13 12:15:16,277 | INFO | Metadata file: clone_pairs_dataset_metadata.csv
+2026-05-13 12:15:16,278 | INFO | Output dir: /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs
+2026-05-13 12:15:16,278 | INFO | 
+[Paso 1] Cargando y reconstruyendo pares de código...
+2026-05-13 12:15:16,297 | INFO |   Filas metadata: 12484
+2026-05-13 12:15:17,360 | INFO |   Pares reconstruidos: 12484
+2026-05-13 12:15:17,361 | INFO |   Filas descartadas: 0
+2026-05-13 12:15:17,361 | INFO |   ✓ Validación: todos los índices eran válidos
+2026-05-13 12:15:17,503 | INFO |   Guardado: datasets/reconstructed_pairs.csv
+2026-05-13 12:15:17,503 | INFO | 
+[Paso 2] Preparando campos de texto (limpieza y tokenización)...
+2026-05-13 12:15:20,875 | INFO |   ✓ Limpieza y tokenización completadas
+2026-05-13 12:15:20,875 | INFO | 
+[Paso 3] Creando splits preservando grupos...
+2026-05-13 12:18:44,324 | INFO | ======================================================================
+2026-05-13 12:18:44,325 | INFO | Pipeline Clone Detection Baseline
+2026-05-13 12:18:44,325 | INFO | ======================================================================
+2026-05-13 12:18:44,326 | INFO | Dataset root: /Users/mii1rii_macbook_2024/code-clone-detector
+2026-05-13 12:18:44,326 | INFO | Metadata file: clone_pairs_dataset_metadata.csv
+2026-05-13 12:18:44,327 | INFO | Output dir: /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs
+2026-05-13 12:18:44,327 | INFO | 
+[Paso 1] Cargando y reconstruyendo pares de código...
+2026-05-13 12:18:44,341 | INFO |   Filas metadata: 12484
+2026-05-13 12:18:45,776 | INFO |   Pares reconstruidos: 12484
+2026-05-13 12:18:45,778 | INFO |   Filas descartadas: 0
+2026-05-13 12:18:45,778 | INFO |   ✓ Validación: todos los índices eran válidos
+2026-05-13 12:18:45,929 | INFO |   Guardado: datasets/reconstructed_pairs.csv
+2026-05-13 12:18:45,930 | INFO | 
+[Paso 2] Preparando campos de texto (limpieza y tokenización)...
+2026-05-13 12:18:49,312 | INFO |   ✓ Limpieza y tokenización completadas
+2026-05-13 12:18:49,312 | INFO | 
+[Paso 3] Creando splits preservando grupos...
+2026-05-13 12:18:49,322 | INFO |   Train: 8738 | Val: 1872 | Test: 1874
+2026-05-13 12:18:49,887 | INFO |   Guardado: datasets/reconstructed_pairs_preprocessed.csv
+2026-05-13 12:18:49,887 | INFO | 
+[Paso 4] Extrayendo features (TF-IDF + similitud)...
+2026-05-13 12:18:51,780 | INFO |   Features: 13 dimensiones
+2026-05-13 12:18:51,781 | INFO | 
+[Paso 5] Preparando tareas...
+2026-05-13 12:21:44,325 | INFO | ======================================================================
+2026-05-13 12:21:44,326 | INFO | Pipeline Clone Detection Baseline
+2026-05-13 12:21:44,327 | INFO | ======================================================================
+2026-05-13 12:21:44,327 | INFO | Dataset root: /Users/mii1rii_macbook_2024/code-clone-detector
+2026-05-13 12:21:44,327 | INFO | Metadata file: clone_pairs_dataset_metadata.csv
+2026-05-13 12:21:44,328 | INFO | Output dir: /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs
+2026-05-13 12:21:44,328 | INFO | 
+[Paso 1] Cargando y reconstruyendo pares de código...
+2026-05-13 12:21:44,343 | INFO |   Filas metadata: 12484
+2026-05-13 12:21:45,676 | INFO |   Pares reconstruidos: 12484
+2026-05-13 12:21:45,677 | INFO |   Filas descartadas: 0
+2026-05-13 12:21:45,677 | INFO |   ✓ Validación: todos los índices eran válidos
+2026-05-13 12:21:45,826 | INFO |   Guardado: datasets/reconstructed_pairs.csv
+2026-05-13 12:21:45,827 | INFO | 
+[Paso 2] Preparando campos de texto (limpieza y tokenización)...
+2026-05-13 12:21:49,308 | INFO |   ✓ Limpieza y tokenización completadas
+2026-05-13 12:21:49,309 | INFO | 
+[Paso 3] Creando splits preservando grupos...
+2026-05-13 12:21:49,316 | INFO |   Train: 8738 | Val: 1872 | Test: 1874
+2026-05-13 12:21:49,879 | INFO |   Guardado: datasets/reconstructed_pairs_preprocessed.csv
+2026-05-13 12:21:49,879 | INFO | 
+[Paso 4] Extrayendo features (TF-IDF + similitud)...
+2026-05-13 12:21:51,840 | INFO |   Features: 13 dimensiones
+2026-05-13 12:21:51,840 | INFO | 
+[Paso 5] Preparando tareas...
+2026-05-13 12:21:51,846 | INFO |   Task A (is_clone): train=8738 val=1872 test=1874
+2026-05-13 12:21:51,847 | INFO |   Task B (clone_type): train=5749 val=1267 test=1237
+2026-05-13 12:21:51,847 | INFO | 
+[Paso 6] Entrenando modelos...
+2026-05-13 12:21:51,849 | INFO | 
+  task_a: train=8738 val=1872 test=1874
+2026-05-13 12:21:51,849 | INFO |     Imbalance ratio (train): 1.92
+2026-05-13 12:21:51,854 | INFO |     Entrenando decision_tree...
+2026-05-13 12:21:51,911 | INFO |       Val F1 (macro): 0.871
+2026-05-13 12:21:51,912 | INFO |       Test F1 (macro): 0.878
+2026-05-13 12:21:52,214 | INFO | 
+  task_b: train=5749 val=1267 test=1237
+2026-05-13 12:21:52,215 | INFO |     Imbalance ratio (train): inf
+2026-05-13 12:21:52,221 | INFO |     Entrenando decision_tree...
+2026-05-13 12:21:52,285 | INFO |       Val F1 (macro): 1.000
+2026-05-13 12:21:52,285 | INFO |       Test F1 (macro): 1.000
+2026-05-13 12:21:52,425 | INFO |   Total results: 4 (modelos × tareas × splits)
+2026-05-13 12:21:52,425 | INFO | 
+[Paso 7] Generando reportes...
+2026-05-13 12:22:55,536 | INFO | ======================================================================
+2026-05-13 12:22:55,536 | INFO | Pipeline Clone Detection Baseline
+2026-05-13 12:22:55,537 | INFO | ======================================================================
+2026-05-13 12:22:55,537 | INFO | Dataset root: /Users/mii1rii_macbook_2024/code-clone-detector
+2026-05-13 12:22:55,537 | INFO | Metadata file: clone_pairs_dataset_metadata.csv
+2026-05-13 12:22:55,538 | INFO | Output dir: /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs
+2026-05-13 12:22:55,539 | INFO | 
+[Paso 1] Cargando y reconstruyendo pares de código...
+2026-05-13 12:22:55,553 | INFO |   Filas metadata: 12484
+2026-05-13 12:22:56,851 | INFO |   Pares reconstruidos: 12484
+2026-05-13 12:22:56,852 | INFO |   Filas descartadas: 0
+2026-05-13 12:22:56,852 | INFO |   ✓ Validación: todos los índices eran válidos
+2026-05-13 12:22:56,986 | INFO |   Guardado: datasets/reconstructed_pairs.csv
+2026-05-13 12:22:56,986 | INFO | 
+[Paso 2] Preparando campos de texto (limpieza y tokenización)...
+2026-05-13 12:23:00,359 | INFO |   ✓ Limpieza y tokenización completadas
+2026-05-13 12:23:00,360 | INFO | 
+[Paso 3] Creando splits preservando grupos...
+2026-05-13 12:23:00,366 | INFO |   Train: 8738 | Val: 1872 | Test: 1874
+2026-05-13 12:23:00,932 | INFO |   Guardado: datasets/reconstructed_pairs_preprocessed.csv
+2026-05-13 12:23:00,932 | INFO | 
+[Paso 4] Extrayendo features (TF-IDF + similitud)...
+2026-05-13 12:23:03,053 | INFO |   Features: 13 dimensiones
+2026-05-13 12:23:03,055 | INFO | 
+[Paso 5] Preparando tareas...
+2026-05-13 12:23:03,064 | INFO |   Task A (is_clone): train=8738 val=1872 test=1874
+2026-05-13 12:23:03,064 | INFO |   Task B (clone_type): train=5749 val=1267 test=1237
+2026-05-13 12:23:03,065 | INFO | 
+[Paso 6] Entrenando modelos...
+2026-05-13 12:23:03,066 | INFO | 
+  task_a: train=8738 val=1872 test=1874
+2026-05-13 12:23:03,067 | INFO |     Imbalance ratio (train): 1.92
+2026-05-13 12:23:03,073 | INFO |     Entrenando decision_tree...
+2026-05-13 12:23:03,136 | INFO |       Val F1 (macro): 0.871
+2026-05-13 12:23:03,136 | INFO |       Test F1 (macro): 0.878
+2026-05-13 12:23:03,414 | INFO | 
+  task_b: train=5749 val=1267 test=1237
+2026-05-13 12:23:03,415 | INFO |     Imbalance ratio (train): inf
+2026-05-13 12:23:03,419 | INFO |     Entrenando decision_tree...
+2026-05-13 12:23:03,484 | INFO |       Val F1 (macro): 1.000
+2026-05-13 12:23:03,484 | INFO |       Test F1 (macro): 1.000
+2026-05-13 12:23:03,659 | INFO |   Total results: 4 (modelos × tareas × splits)
+2026-05-13 12:23:03,659 | INFO | 
+[Paso 7] Generando reportes...
+2026-05-13 12:23:03,662 | INFO | Baseline report saved to /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs/reports/baseline_report.md
+2026-05-13 12:23:03,662 | INFO | Pipeline completed successfully.
+2026-05-13 12:24:02,271 | INFO | ======================================================================
+2026-05-13 12:24:02,271 | INFO | Pipeline Clone Detection Baseline
+2026-05-13 12:24:02,272 | INFO | ======================================================================
+2026-05-13 12:24:02,272 | INFO | Dataset root: /Users/mii1rii_macbook_2024/code-clone-detector
+2026-05-13 12:24:02,273 | INFO | Metadata file: clone_pairs_dataset_metadata.csv
+2026-05-13 12:24:02,273 | INFO | Output dir: /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs
+2026-05-13 12:24:02,274 | INFO | 
+[Paso 1] Cargando y reconstruyendo pares de código...
+2026-05-13 12:24:02,286 | INFO |   Filas metadata: 12484
+2026-05-13 12:24:03,050 | INFO |   Pares reconstruidos: 12484
+2026-05-13 12:24:03,050 | INFO |   Filas descartadas: 0
+2026-05-13 12:24:03,051 | INFO |   ✓ Validación: todos los índices eran válidos
+2026-05-13 12:24:03,173 | INFO |   Guardado: datasets/reconstructed_pairs.csv
+2026-05-13 12:24:03,174 | INFO | 
+[Paso 2] Preparando campos de texto (limpieza y tokenización)...
+2026-05-13 12:24:06,753 | INFO |   ✓ Limpieza y tokenización completadas
+2026-05-13 12:24:06,753 | INFO | 
+[Paso 3] Creando splits preservando grupos...
+2026-05-13 12:24:06,760 | INFO |   Train: 8738 | Val: 1872 | Test: 1874
+2026-05-13 12:24:07,303 | INFO |   Guardado: datasets/reconstructed_pairs_preprocessed.csv
+2026-05-13 12:24:07,304 | INFO | 
+[Paso 4] Extrayendo features (TF-IDF + similitud)...
+2026-05-13 12:24:09,220 | INFO |   Features: 13 dimensiones
+2026-05-13 12:24:09,222 | INFO | 
+[Paso 5] Preparando tareas...
+2026-05-13 12:24:09,227 | INFO |   Task A (is_clone): train=8738 val=1872 test=1874
+2026-05-13 12:24:09,228 | INFO |   Task B (clone_type): train=5749 val=1267 test=1237
+2026-05-13 12:24:09,228 | INFO | 
+[Paso 6] Entrenando modelos...
+2026-05-13 12:24:09,230 | INFO | 
+  task_a: train=8738 val=1872 test=1874
+2026-05-13 12:24:09,230 | INFO |     Imbalance ratio (train): 1.92
+2026-05-13 12:24:09,234 | INFO |     Entrenando decision_tree...
+2026-05-13 12:24:09,287 | INFO |       Val F1 (macro): 0.871
+2026-05-13 12:24:09,287 | INFO |       Test F1 (macro): 0.878
+2026-05-13 12:24:09,579 | INFO | 
+  task_b: train=5749 val=1267 test=1237
+2026-05-13 12:24:09,580 | INFO |     Imbalance ratio (train): inf
+2026-05-13 12:24:09,584 | INFO |     Entrenando decision_tree...
+2026-05-13 12:24:09,645 | INFO |       Val F1 (macro): 1.000
+2026-05-13 12:24:09,646 | INFO |       Test F1 (macro): 1.000
+2026-05-13 12:24:09,761 | INFO |   Total results: 4 (modelos × tareas × splits)
+2026-05-13 12:24:09,761 | INFO | 
+[Paso 7] Generando reportes...
+2026-05-13 12:24:09,764 | INFO | Baseline report saved to /Users/mii1rii_macbook_2024/code-clone-detector/baseline_outputs/reports/baseline_report.md
+2026-05-13 12:24:09,764 | INFO | Pipeline completed successfully.

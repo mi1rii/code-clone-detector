@@ -1,0 +1,11 @@
+{
+  "strategy": "undersample",
+  "rows_before": 5749,
+  "class_distribution_before": {
+    "true_semantic_clones": 5749
+  },
+  "rows_after": 5749,
+  "class_distribution_after": {
+    "true_semantic_clones": 5749
+  }
+}
