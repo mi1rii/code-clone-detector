@@ -7,11 +7,6 @@ from typing import Any
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import GridSearchCV
-from sklearn.neural_network import MLPClassifier
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
 from .evaluate_baseline import (
@@ -25,17 +20,9 @@ from .utils import save_json
 def _build_models(
     class_weight,
     seed: int,
-    include_mlp: bool,
-    mlp_grid_search: bool,
 ) -> dict[str, Any]:
-    #definimos los modelos base y activamos variantes de MLP según la configuración
+    #definimos un baseline simple con DecisionTreeClassifier
     models = {
-        "logistic_regression": LogisticRegression(
-            max_iter=2000,
-            solver="liblinear",
-            class_weight=class_weight,
-            random_state=seed,
-        ),
         "decision_tree": DecisionTreeClassifier(
             criterion="gini",
             max_depth=12,
@@ -44,38 +31,6 @@ def _build_models(
             random_state=seed,
         ),
     }
-    if include_mlp:
-        if mlp_grid_search:
-            #probamos una grilla pequeña de hiperparámetros, como en la práctica de clase
-            mlp_param_grid = {
-                "mlpclassifier__hidden_layer_sizes": [(1,), (1, 1), (2, 2), (3, 3)],
-                "mlpclassifier__activation": ["identity", "logistic", "tanh", "relu"],
-                "mlpclassifier__max_iter": [200, 500],
-                "mlpclassifier__learning_rate_init": [0.001, 0.01, 0.1],
-            }
-            base_mlp = make_pipeline(
-                StandardScaler(),
-                MLPClassifier(random_state=seed),
-            )
-            models["mlp_gridsearch"] = GridSearchCV(
-                estimator=base_mlp,
-                param_grid=mlp_param_grid,
-                scoring="f1_weighted",
-                cv=3,
-                n_jobs=-1,
-            )
-        else:
-            #dejamos una configuración fija de MLP para una corrida rápida
-            models["mlp"] = make_pipeline(
-                StandardScaler(),
-                MLPClassifier(
-                    hidden_layer_sizes=(3, 3),
-                    activation="relu",
-                    max_iter=500,
-                    learning_rate_init=0.01,
-                    random_state=seed,
-                ),
-            )
     return models
 
 
@@ -91,16 +46,12 @@ def train_and_evaluate_task(
     class_weight,
     output_dir: Path,
     seed: int,
-    include_mlp: bool = False,
-    mlp_grid_search: bool = False,
     save_roc_curves: bool = False,
 ) -> dict[str, Any]:
     #entrenamos y evaluamos ambos modelos sobre val y test
     models = _build_models(
         class_weight=class_weight,
         seed=seed,
-        include_mlp=include_mlp,
-        mlp_grid_search=mlp_grid_search,
     )
 
     #organizamos carpetas de salida por tipo de artefacto
