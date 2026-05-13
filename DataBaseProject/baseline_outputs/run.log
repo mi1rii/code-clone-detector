@@ -1,12 +1,12 @@
 2026-05-12 22:40:33,463 | INFO | Starting baseline pipeline.
 2026-05-12 22:40:33,463 | INFO | Dataset root: DataBaseProject
 2026-05-12 22:40:33,464 | INFO | Metadata CSV: DataBaseProject\clone_pairs_dataset_metadata.csv
-2026-05-12 22:40:33,464 | INFO | Teacher profile=True | include_mlp=True | mlp_grid_search=True
+2026-05-12 22:40:33,464 | INFO | reference profile=True | include_mlp=True | mlp_grid_search=True
 2026-05-12 22:40:33,483 | INFO | Loaded metadata rows: 12484
 2026-05-12 22:40:33,490 | INFO | Metadata cleaning: valid_rows=12484 | invalid_rows=0
 2026-05-12 22:40:40,613 | INFO | Reconstruction summary: {'metadata_rows': 12484, 'reconstructed_rows': 12484, 'dropped_rows': 0, 'drop_reasons': {}}
-2026-05-12 22:40:41,206 | INFO | Saved reconstructed dataset: DataBaseProject\baseline_outputs_teacher_profile\datasets\reconstructed_pairs.csv
-2026-05-12 22:40:41,207 | INFO | Saved dropped rows dataset: DataBaseProject\baseline_outputs_teacher_profile\datasets\dropped_rows.csv
+2026-05-12 22:40:41,206 | INFO | Saved reconstructed dataset: DataBaseProject\baseline_outputs_reference_profile\datasets\reconstructed_pairs.csv
+2026-05-12 22:40:41,207 | INFO | Saved dropped rows dataset: DataBaseProject\baseline_outputs_reference_profile\datasets\dropped_rows.csv
 2026-05-12 22:40:59,478 | INFO | Preprocessing completed on 12484 rows.
 2026-05-12 22:41:04,823 | INFO | Task A split statistics (`is_clone`):
 2026-05-12 22:41:04,823 | INFO |   test | rows=1859 | unique_problem_id=823 | class_dist={'1': 1230, '0': 629}
@@ -18,5 +18,5 @@
 2026-05-12 22:44:21,100 | INFO |   train | rows=5788 | unique_problem_id=3838 | class_dist={'type_IV': 4037, 'type_III': 1751}
 2026-05-12 22:44:21,100 | INFO |   val | rows=1225 | unique_problem_id=822 | class_dist={'type_IV': 854, 'type_III': 371}
 2026-05-12 22:44:21,136 | INFO | Task B class imbalance ratio (train): 2.3055 | class_weight=balanced
-2026-05-12 22:46:17,710 | INFO | Baseline report saved to DataBaseProject\baseline_outputs_teacher_profile\reports\baseline_report.md
+2026-05-12 22:46:17,710 | INFO | Baseline report saved to DataBaseProject\baseline_outputs_reference_profile\reports\baseline_report.md
 2026-05-12 22:46:17,710 | INFO | Pipeline completed successfully.

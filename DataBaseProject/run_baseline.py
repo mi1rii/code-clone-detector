@@ -70,7 +70,7 @@ def _train_task_a(
     logger: logging.Logger,
     include_mlp: bool,
     mlp_grid_search: bool,
-    teacher_style_metrics: bool,
+    reference_style_metrics: bool,
 ) -> dict:
     #entrenamos la tarea binaria clone vs non clone
     split = grouped_train_val_test_split(
@@ -149,7 +149,7 @@ def _train_task_a(
         seed=config.seed,
         include_mlp=include_mlp,
         mlp_grid_search=mlp_grid_search,
-        save_roc_curves=teacher_style_metrics,
+        save_roc_curves=reference_style_metrics,
     )
     summary["class_imbalance_ratio_train"] = ratio
     summary["class_distribution_train"] = class_distribution(train_df["is_clone"])
@@ -261,7 +261,7 @@ def _build_markdown_report(
     task_b_summary: dict,
     include_mlp: bool,
     mlp_grid_search: bool,
-    teacher_profile_enabled: bool,
+    reference_profile_enabled: bool,
 ) -> None:
     #dejamos un reporte breve y legible con datos de reconstruccion y rendimiento
     model_lines = [
@@ -273,9 +273,9 @@ def _build_markdown_report(
     if mlp_grid_search:
         #si activamos búsqueda, dejamos rastro de que comparamos hiperparámetros
         model_lines.append("- Hyperparameter search: GridSearchCV over MLP (f1_weighted).")
-    if teacher_profile_enabled:
+    if reference_profile_enabled:
         #si usamos el perfil docente, reportamos que también generamos ROC/AUC
-        model_lines.append("- Teacher profile enabled: ROC/AUC plots for Task A.")
+        model_lines.append("- reference profile enabled: ROC/AUC plots for Task A.")
 
     lines = [
         "# Baseline Report",
@@ -345,7 +345,7 @@ def main() -> None:
         help="If max/min class ratio in train >= threshold, use class_weight='balanced'.",
     )
     parser.add_argument(
-        "--teacher-profile",
+        "--reference-profile",
         action="store_true",
         help=(
             "Align baseline with class practices from notebooks: include MLP model, "
@@ -385,13 +385,13 @@ def main() -> None:
     logger.info("Starting baseline pipeline.")
     logger.info("Dataset root: %s", config.dataset_root)
     logger.info("Metadata CSV: %s", config.metadata_path)
-    teacher_profile_enabled = bool(args.teacher_profile)
+    reference_profile_enabled = bool(args.reference_profile)
     #definimos este perfil para ejecutar el baseline con el patrón de clase de la profesora
-    include_mlp = bool(args.include_mlp or teacher_profile_enabled)
-    mlp_grid_search = bool(args.mlp_grid_search or teacher_profile_enabled)
+    include_mlp = bool(args.include_mlp or reference_profile_enabled)
+    mlp_grid_search = bool(args.mlp_grid_search or reference_profile_enabled)
     logger.info(
-        "Teacher profile=%s | include_mlp=%s | mlp_grid_search=%s",
-        teacher_profile_enabled,
+        "reference profile=%s | include_mlp=%s | mlp_grid_search=%s",
+        reference_profile_enabled,
         include_mlp,
         mlp_grid_search,
     )
@@ -451,7 +451,7 @@ def main() -> None:
         logger=logger,
         include_mlp=include_mlp,
         mlp_grid_search=mlp_grid_search,
-        teacher_style_metrics=teacher_profile_enabled,
+        reference_style_metrics=reference_profile_enabled,
     )
     task_b_summary = _train_task_b(
         prepared_df,
@@ -487,7 +487,7 @@ def main() -> None:
         task_b_summary=task_b_summary,
         include_mlp=include_mlp,
         mlp_grid_search=mlp_grid_search,
-        teacher_profile_enabled=teacher_profile_enabled,
+        reference_profile_enabled=reference_profile_enabled,
     )
     logger.info("Baseline report saved to %s", output_dir / "reports" / "baseline_report.md")
     logger.info("Pipeline completed successfully.")

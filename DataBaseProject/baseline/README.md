@@ -4,7 +4,7 @@ Pipeline reproducible para:
 - Tarea A: `is_clone` (0/1)
 - Tarea B: `clone_type` (`type_III` vs `type_IV`) usando solo positivos
 
-Incluye un perfil opcional tipo clase (`--teacher-profile`) basado en prácticas de:
+Incluye un perfil opcional tipo clase (`--reference-profile`) basado en prácticas de:
 - Árboles de decisión
 - Métricas por clase + `classification_report`
 - Curvas ROC/AUC
@@ -29,9 +29,9 @@ python DataBaseProject/run_baseline.py \
 python DataBaseProject/run_baseline.py \
   --dataset-root DataBaseProject \
   --metadata-file clone_pairs_dataset_metadata.csv \
-  --output-dir DataBaseProject/baseline_outputs_teacher \
+  --output-dir DataBaseProject/baseline_outputs_reference \
   --seed 42 \
-  --teacher-profile
+  --reference-profile
 ```
 
 ## Qué hace el pipeline
