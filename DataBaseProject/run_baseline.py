@@ -9,6 +9,7 @@ import pandas as pd
 
 from baseline.config import BaselineConfig
 from baseline.data_loading import (
+    balance_training_dataframe,
     clean_metadata_rows,
     grouped_train_val_test_split,
     load_metadata_csv,
@@ -68,6 +69,7 @@ def _train_task_a(
     config: BaselineConfig,
     output_dir: Path,
     logger: logging.Logger,
+    balance_train_strategy: str,
 ) -> dict:
     #entrenamos la tarea binaria clone vs non clone
     split = grouped_train_val_test_split(
@@ -96,9 +98,19 @@ def _train_task_a(
     save_json({"split_stats": stats}, output_dir / "metrics" / "task_a_split_stats.json")
 
     #separamos dataframes por split
-    train_df = task_df[task_df["split_task_a"] == "train"].copy()
+    train_df_raw = task_df[task_df["split_task_a"] == "train"].copy()
     val_df = task_df[task_df["split_task_a"] == "val"].copy()
     test_df = task_df[task_df["split_task_a"] == "test"].copy()
+
+    #balanceamos solo entrenamiento y dejamos val/test intactos para medir generalizacion real
+    train_df, balance_info = balance_training_dataframe(
+        train_df=train_df_raw,
+        target_col="is_clone",
+        strategy=balance_train_strategy,
+        seed=config.seed,
+    )
+    save_json(balance_info, output_dir / "metrics" / "task_a_balance_info.json")
+    logger.info("Task A balancing: %s", balance_info)
 
     #aplicamos class_weight balanced cuando el desbalance supera el umbral definido
     ratio = imbalance_ratio(train_df["is_clone"])
@@ -148,6 +160,8 @@ def _train_task_a(
     )
     summary["class_imbalance_ratio_train"] = ratio
     summary["class_distribution_train"] = class_distribution(train_df["is_clone"])
+    summary["class_distribution_train_before_balance"] = class_distribution(train_df_raw["is_clone"])
+    summary["balance_info"] = balance_info
     return summary
 
 
@@ -156,6 +170,7 @@ def _train_task_b(
     config: BaselineConfig,
     output_dir: Path,
     logger: logging.Logger,
+    balance_train_strategy: str,
 ) -> dict:
     #entrenamos la tarea multiclasica solo en positivos para distinguir type_iii y type_iv
     positives_df = prepared_df[prepared_df["is_clone"] == 1].copy()
@@ -185,9 +200,19 @@ def _train_task_b(
     save_json({"split_stats": stats}, output_dir / "metrics" / "task_b_split_stats.json")
 
     #separamos dataframes por split
-    train_df = task_df[task_df["split_task_b"] == "train"].copy()
+    train_df_raw = task_df[task_df["split_task_b"] == "train"].copy()
     val_df = task_df[task_df["split_task_b"] == "val"].copy()
     test_df = task_df[task_df["split_task_b"] == "test"].copy()
+
+    #balanceamos solo entrenamiento y dejamos val/test intactos para medir generalizacion real
+    train_df, balance_info = balance_training_dataframe(
+        train_df=train_df_raw,
+        target_col="clone_type",
+        strategy=balance_train_strategy,
+        seed=config.seed + 100,
+    )
+    save_json(balance_info, output_dir / "metrics" / "task_b_balance_info.json")
+    logger.info("Task B balancing: %s", balance_info)
 
     #decidimos si usar class_weight balanced para compensar desbalance
     ratio = imbalance_ratio(train_df["clone_type"])
@@ -237,6 +262,8 @@ def _train_task_b(
     )
     summary["class_imbalance_ratio_train"] = ratio
     summary["class_distribution_train"] = class_distribution(train_df["clone_type"])
+    summary["class_distribution_train_before_balance"] = class_distribution(train_df_raw["clone_type"])
+    summary["balance_info"] = balance_info
     return summary
 
 
@@ -250,6 +277,7 @@ def _build_markdown_report(
     drop_reasons: dict,
     task_a_summary: dict,
     task_b_summary: dict,
+    balance_train_strategy: str,
 ) -> None:
     #dejamos un reporte breve y legible con datos de reconstruccion y rendimiento
     model_lines = [
@@ -276,12 +304,16 @@ def _build_markdown_report(
         "- Grouped split by `problem_id` to prevent leakage.",
         "",
         "## Task A (`is_clone`)",
+        f"- Balance strategy (train): **{balance_train_strategy}**",
+        f"- Train class distribution before balance: `{task_a_summary.get('class_distribution_train_before_balance', {})}`",
         f"- Train class distribution: `{task_a_summary.get('class_distribution_train', {})}`",
         f"- Imbalance ratio (train): **{task_a_summary.get('class_imbalance_ratio_train', 0):.4f}**",
         f"- Best model by validation F1-macro: **{task_a_summary['best_model_by_val_f1_macro']}**",
         f"- Best validation F1-macro: **{task_a_summary['best_val_f1_macro']:.4f}**",
         "",
         "## Task B (`clone_type` on positives)",
+        f"- Balance strategy (train): **{balance_train_strategy}**",
+        f"- Train class distribution before balance: `{task_b_summary.get('class_distribution_train_before_balance', {})}`",
         f"- Train class distribution: `{task_b_summary.get('class_distribution_train', {})}`",
         f"- Imbalance ratio (train): **{task_b_summary.get('class_imbalance_ratio_train', 0):.4f}**",
         f"- Best model by validation F1-macro: **{task_b_summary['best_model_by_val_f1_macro']}**",
@@ -331,6 +363,13 @@ def main() -> None:
         choices=["decision_tree"],
         help="Baseline model. This pipeline uses DecisionTreeClassifier only.",
     )
+    parser.add_argument(
+        "--balance-train-strategy",
+        type=str,
+        default="undersample",
+        choices=["none", "undersample", "oversample"],
+        help="Class balancing strategy applied only to train split in each task.",
+    )
     args = parser.parse_args()
 
     #consolidamos configuracion de la corrida
@@ -355,6 +394,7 @@ def main() -> None:
     logger.info("Dataset root: %s", config.dataset_root)
     logger.info("Metadata CSV: %s", config.metadata_path)
     logger.info("Model configuration: decision_tree only")
+    logger.info("Train balance strategy: %s", args.balance_train_strategy)
 
     #cargamos metadata y verificamos su esquema
     metadata_df = load_metadata_csv(config.metadata_path)
@@ -409,12 +449,14 @@ def main() -> None:
         config=config,
         output_dir=output_dir,
         logger=logger,
+        balance_train_strategy=args.balance_train_strategy,
     )
     task_b_summary = _train_task_b(
         prepared_df,
         config=config,
         output_dir=output_dir,
         logger=logger,
+        balance_train_strategy=args.balance_train_strategy,
     )
 
     #generamos tablas comparativas por tarea y consolidado
@@ -440,6 +482,7 @@ def main() -> None:
         drop_reasons=(dropped_df["drop_reason"].value_counts().to_dict() if not dropped_df.empty else {}),
         task_a_summary=task_a_summary,
         task_b_summary=task_b_summary,
+        balance_train_strategy=args.balance_train_strategy,
     )
     logger.info("Baseline report saved to %s", output_dir / "reports" / "baseline_report.md")
     logger.info("Pipeline completed successfully.")

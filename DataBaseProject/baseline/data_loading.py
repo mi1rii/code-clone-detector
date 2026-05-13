@@ -203,3 +203,53 @@ def split_statistics(
             }
         )
     return stats
+
+
+def balance_training_dataframe(
+    train_df: pd.DataFrame,
+    target_col: str,
+    strategy: str = "undersample",
+    seed: int = 42,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    #balanceamos solo el split de entrenamiento para reducir sesgo por clases mayoritarias
+    if strategy not in {"none", "undersample", "oversample"}:
+        raise ValueError("strategy must be one of: none, undersample, oversample")
+
+    original_counts = train_df[target_col].value_counts()
+    info: dict[str, Any] = {
+        "strategy": strategy,
+        "target_col": target_col,
+        "rows_before": int(len(train_df)),
+        "class_distribution_before": {str(k): int(v) for k, v in original_counts.items()},
+    }
+
+    if strategy == "none" or len(original_counts) <= 1:
+        info["rows_after"] = int(len(train_df))
+        info["class_distribution_after"] = info["class_distribution_before"]
+        return train_df.copy(), info
+
+    if strategy == "undersample":
+        target_size = int(original_counts.min())
+        replace = False
+    else:
+        target_size = int(original_counts.max())
+        replace = True
+
+    balanced_parts: list[pd.DataFrame] = []
+    for class_value in original_counts.index.tolist():
+        class_df = train_df[train_df[target_col] == class_value]
+        balanced_parts.append(
+            class_df.sample(
+                n=target_size,
+                replace=replace,
+                random_state=seed,
+            )
+        )
+
+    balanced_df = pd.concat(balanced_parts, axis=0)
+    balanced_df = balanced_df.sample(frac=1.0, random_state=seed).copy()
+
+    balanced_counts = balanced_df[target_col].value_counts()
+    info["rows_after"] = int(len(balanced_df))
+    info["class_distribution_after"] = {str(k): int(v) for k, v in balanced_counts.items()}
+    return balanced_df, info

@@ -19,7 +19,8 @@ python DataBaseProject/run_baseline.py \
   --dataset-root DataBaseProject \
   --metadata-file clone_pairs_dataset_metadata.csv \
   --output-dir DataBaseProject/baseline_outputs \
-  --seed 42
+  --seed 42 \
+  --balance-train-strategy undersample
 ```
 
 ## Que hace el pipeline
@@ -35,9 +36,10 @@ python DataBaseProject/run_baseline.py \
    - overlap de tokens unicos
    - diferencias de longitud, lineas y numero de tokens
 6. Aplica split por grupos (`problem_id`) para evitar leakage.
-7. Entrena y evalua `DecisionTreeClassifier`.
-8. Guarda modelo, metricas, predicciones, matriz de confusion y reporte final.
-9. En binario (`is_clone`) genera ROC y AUC.
+7. Balancea solo el split de entrenamiento (`none`, `undersample` u `oversample`).
+8. Entrena y evalua `DecisionTreeClassifier`.
+9. Guarda modelo, metricas, predicciones, matriz de confusion y reporte final.
+10. En binario (`is_clone`) genera ROC y AUC.
 
 ## Salidas principales
 

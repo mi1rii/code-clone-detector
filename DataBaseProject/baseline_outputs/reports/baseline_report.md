@@ -17,16 +17,20 @@
 - Grouped split by `problem_id` to prevent leakage.
 
 ## Task A (`is_clone`)
-- Train class distribution: `{'1': 5787, '0': 2967}`
-- Imbalance ratio (train): **1.9505**
+- Balance strategy (train): **undersample**
+- Train class distribution before balance: `{'1': 5787, '0': 2967}`
+- Train class distribution: `{'1': 2967, '0': 2967}`
+- Imbalance ratio (train): **1.0000**
 - Best model by validation F1-macro: **decision_tree**
-- Best validation F1-macro: **0.8824**
+- Best validation F1-macro: **0.8672**
 
 ## Task B (`clone_type` on positives)
-- Train class distribution: `{'type_IV': 4037, 'type_III': 1751}`
-- Imbalance ratio (train): **2.3055**
+- Balance strategy (train): **undersample**
+- Train class distribution before balance: `{'type_IV': 4037, 'type_III': 1751}`
+- Train class distribution: `{'type_III': 1751, 'type_IV': 1751}`
+- Imbalance ratio (train): **1.0000**
 - Best model by validation F1-macro: **decision_tree**
-- Best validation F1-macro: **0.7527**
+- Best validation F1-macro: **0.6878**
 
 ## Reproducibility
 - Random seed: **42**
