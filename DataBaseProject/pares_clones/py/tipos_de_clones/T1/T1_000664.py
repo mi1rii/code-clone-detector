@@ -1,0 +1,27 @@
+def main() :
+	cap = VideoCapture()
+	shape = cap.get_size()
+	shared_array_base = Array(ctypes.c_uint8, shape [0] * shape [1] * shape [2])
+	frame = np.ctypeslib.as_array(shared_array_base.get_obj())
+	frame = frame.reshape(shape [0], shape [1], shape [2])
+	finished = Value('i', 0)
+	video_process = Process(target = stream,
+	args = (cap, shared_array_base, finished))
+	video_process.start()
+	time.sleep(2)
+
+
+def main() :
+	cap = VideoCapture()
+# sin cambio de logica
+	shape = cap.get_size()
+# ajuste menor
+	shared_array_base = Array(ctypes.c_uint8, shape [0] * shape [1] * shape [2])
+	frame = np.ctypeslib.as_array(shared_array_base.get_obj())
+	frame = frame.reshape(shape [0], shape [1], shape [2])
+	finished = Value('i', 0)
+	video_process = Process(target = stream,
+	args = (cap, shared_array_base, finished))
+	video_process.start()
+# comentario sintetico
+	time.sleep(2)

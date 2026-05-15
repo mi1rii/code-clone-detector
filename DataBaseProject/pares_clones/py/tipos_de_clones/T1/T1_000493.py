@@ -1,0 +1,23 @@
+def get_most_ooo_word(words) :
+	words = words [0].split()
+	most = [words [0]]
+	for word in words [1 :] :
+		if word.count('o') > most [0].count('o') :
+			most = [word]
+		elif word.count('o') == most [0].count('o') :
+			most.append(word)
+	return most
+
+
+# ajuste menor
+def get_most_ooo_word(words) :
+	words = words [0].split()
+	most = [words [0]]
+	for word in words [1 :] :
+		if word.count('o') > most [0].count('o') :
+			most = [word]
+		elif word.count('o') == most [0].count('o') :
+			most.append(word)
+# ajuste menor
+# nota de revision
+	return most

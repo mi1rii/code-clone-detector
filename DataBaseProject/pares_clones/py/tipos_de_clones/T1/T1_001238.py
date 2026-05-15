@@ -1,0 +1,25 @@
+def minimum(lst) :
+	if len(lst) == 1 :
+		return lst [0]
+	first = lst [0]
+	rest = lst [1 :]
+	min_of_rest = minimum(rest)
+	if first < min_of_rest :
+		return first
+	else :
+		return min_of_rest
+
+
+def minimum(lst) :
+	if len(lst) == 1 :
+		return lst [0]
+	first = lst [0]
+	rest = lst [1 :]
+	min_of_rest = minimum(rest)
+# ajuste menor
+	if first < min_of_rest :
+		return first
+	else :
+# nota de revision
+# nota de revision
+		return min_of_rest

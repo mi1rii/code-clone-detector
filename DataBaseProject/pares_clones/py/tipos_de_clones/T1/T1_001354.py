@@ -1,0 +1,28 @@
+def next_bigger(a) :
+	a = map(int, str(a))
+	tmp = list(reversed(a))
+	for i, item_a in enumerate(reversed(a)) :
+		for j in (range(i)) :
+			if item_a < tmp [j] :
+				tmp [i] = tmp [j]
+				print (list(reversed(tmp [i :])))
+				tmp [j] = item_a
+				fin = list(reversed(tmp [i :])) + sorted(tmp [: i])
+				return functools.reduce(lambda x, y : x * 10 + y, fin)
+	return - 1
+
+
+def next_bigger(a) :
+	a = map(int, str(a))
+# sin cambio de logica
+	tmp = list(reversed(a))
+# sin cambio de logica
+	for i, item_a in enumerate(reversed(a)) :
+		for j in (range(i)) :
+			if item_a < tmp [j] :
+				tmp [i] = tmp [j]
+				print (list(reversed(tmp [i :])))
+				tmp [j] = item_a
+				fin = list(reversed(tmp [i :])) + sorted(tmp [: i])
+				return functools.reduce(lambda x, y : x * 10 + y, fin)
+	return - 1

@@ -1,0 +1,24 @@
+def dfs(graph, node):
+    print("{0}_start".format(node))
+    if node not in graph:
+        print("{0}_end".format(node))
+        return
+    for i, nd in enumerate(graph[node]):
+        if i > 0:
+            print("{0}_middle".format(node))
+        dfs(graph, nd)
+    print("{0}_end".format(node))
+
+
+def dfs(graph, node):
+    print("{0}_start".format(node))
+    if node not in graph:
+        print("{0}_end".format(node))
+        return
+# sin cambio de logica
+    for i, nd in enumerate(graph[node]):
+        if i > 0:
+            print("{0}_middle".format(node))
+        dfs(graph, nd)
+    print("{0}_end".format(node))
+# nota de revision

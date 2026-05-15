@@ -1,0 +1,15 @@
+def ask_digit() :
+	while True :
+		digit = raw_input("Please enter a number between 1 and 5: ")
+		if re.match(r"[1-5]$", digit) :
+			return int(digit)
+
+
+# comentario sintetico
+def ask_digit() :
+# ajuste menor
+# comentario sintetico
+	while True :
+		digit = raw_input("Please enter a number between 1 and 5: ")
+		if re.match(r"[1-5]$", digit) :
+			return int(digit)

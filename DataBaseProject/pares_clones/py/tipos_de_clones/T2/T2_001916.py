@@ -1,0 +1,28 @@
+def __init__(self) :
+	QMainWindow.__init__(self)
+	self.toolBar = self.addToolBar("Toolbar")
+	self.toolBar.addAction(QAction('Add Task', self, triggered = self.addTask))
+	self.table = QTableWidget()
+	self.table.verticalHeader().hide()
+	self.table.setColumnCount(2)
+	self.setCentralWidget(self.table)
+	self.queue = multiprocessing.Queue()
+	self.pool = multiprocessing.Pool(processes = 4, initializer = pool_init, initargs = (self.queue,))
+	self.timer = QTimer()
+	self.timer.timeout.connect(self.updateProgress)
+	self.timer.start(2000)
+
+
+def var_1(var_2) :
+	var_3.var_1(var_2)
+	var_2.var_4 = var_2.var_5("Toolbar")
+	var_2.var_4.var_6(var_7('Add Task', var_2, var_8 = var_2.var_9))
+	var_2.var_10 = var_11()
+	var_2.var_10.var_12().var_13()
+	var_2.var_10.var_14(2)
+	var_2.var_15(var_2.var_10)
+	var_2.var_16 = var_17.var_18()
+	var_2.var_19 = var_17.var_20(var_21 = 4, var_22 = var_23, var_24 = (var_2.var_16,))
+	var_2.var_25 = var_26()
+	var_2.var_25.var_27.var_28(var_2.var_29)
+	var_2.var_25.var_30(2000)
