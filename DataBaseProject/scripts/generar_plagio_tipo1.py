@@ -36,9 +36,9 @@ METADATA_COLS = [
     "snippet_index_b",
 ]
 
-SOURCE_GROUP_SYNTH = "true_semantic_t1"
+SOURCE_GROUP_SYNTH = "pares_t1_synth"
 CLONE_TYPE_SYNTH = "type_I"
-SYNTH_REL_DIR = Path("true_semantic_clones") / "py" / "T1"
+SYNTH_REL_DIR = Path("pares_clones") / "py" / "tipos_de_clones" / "T1_SYNTH"
 
 COMENTARIOS = [
     "revision de estilo",
@@ -89,7 +89,10 @@ def guardar_metadata(path_csv: Path, rows: Iterable[dict[str, str]]) -> None:
 
 def limpiar_sinteticos(base_dir: Path, metadata_rows: list[dict[str, str]]) -> tuple[list[dict[str, str]], int, int]:
     # compat: limpia tanto el directorio actual como uno legado.
-    dirs_limpiar = [base_dir / SYNTH_REL_DIR, base_dir / "true_semantic_clones" / "py" / "T1_SYNTH"]
+    dirs_limpiar = [
+        base_dir / SYNTH_REL_DIR,
+        base_dir / "true_semantic_clones" / "py" / "T1_SYNTH",  # legado
+    ]
     borrados_archivos = 0
     for synth_dir in dirs_limpiar:
         if synth_dir.exists():
@@ -102,7 +105,7 @@ def limpiar_sinteticos(base_dir: Path, metadata_rows: list[dict[str, str]]) -> t
     filtrado = [
         r
         for r in metadata_rows
-        if r.get("source_group") not in {SOURCE_GROUP_SYNTH, "true_semantic_t1_synthetic"}
+        if r.get("source_group") not in {SOURCE_GROUP_SYNTH, "true_semantic_t1_synthetic", "true_semantic_t1"}
     ]
     borradas_filas = len(metadata_rows) - len(filtrado)
     return filtrado, borrados_archivos, borradas_filas
@@ -110,8 +113,9 @@ def limpiar_sinteticos(base_dir: Path, metadata_rows: list[dict[str, str]]) -> t
 
 def escoger_snippets_fuente(base_dir: Path, rng: random.Random) -> list[str]:
     roots = [
-        base_dir / "false_semantic_clones" / "py",
-        base_dir / "true_semantic_clones" / "py",
+        base_dir / "pares_clones" / "py" / "tipos_de_clones",
+        base_dir / "false_semantic_clones" / "py",  # legado
+        base_dir / "true_semantic_clones" / "py",   # legado
     ]
     snippets: list[str] = []
     for root in roots:

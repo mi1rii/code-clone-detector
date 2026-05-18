@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Detecta candidatos type_II dentro de false_semantic_clones:
+Detecta candidatos type_II usando filas de metadata:
 - compara snippet 0 vs 1 por archivo
 - considera type_II cuando la estructura tokenizada normalizada coincide
   y existen cambios de identificadores o literales
-- copia los candidatos a false_semantic_clones/py/T2 con patron 2_Clone_<id>.py
+- puede copiar candidatos a una carpeta destino (por defecto dentro de pares_clones)
 """
 
 from __future__ import annotations
@@ -122,15 +122,20 @@ def analizar_par_tipo2(snippet_a: str, snippet_b: str) -> AnalisisPar:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Detecta posibles type_II en false_semantic y crea carpeta T2.")
+    parser = argparse.ArgumentParser(description="Detecta posibles type_II desde metadata.")
     parser.add_argument("--dataset-dir", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument("--source-group", default="pares_t2")
     parser.add_argument("--copiar-a-t2", action="store_true")
     parser.add_argument("--limpiar-t2", action="store_true")
+    parser.add_argument(
+        "--destino-rel",
+        default=r"pares_clones\py\tipos_de_clones\T2_detectados",
+        help="Ruta relativa bajo dataset-dir para copiar candidatos.",
+    )
     args = parser.parse_args()
 
     base_dir = args.dataset_dir.resolve()
-    false_dir = base_dir / "false_semantic_clones" / "py"
-    t2_dir = false_dir / "T2"
+    t2_dir = base_dir / Path(args.destino_rel.replace("\\", "/"))
     metadata_path = base_dir / "clone_pairs_dataset_metadata.csv"
     reporte_path = base_dir / "scripts" / "reporte_false_semantic_tipo2.csv"
 
@@ -140,15 +145,13 @@ def main() -> None:
         if not any(t2_dir.iterdir()):
             t2_dir.rmdir()
 
-    if not false_dir.exists():
-        raise FileNotFoundError(f"No existe: {false_dir}")
     if not metadata_path.exists():
         raise FileNotFoundError(f"No existe: {metadata_path}")
 
     false_rows: list[dict[str, str]] = []
     with metadata_path.open("r", encoding="utf-8", newline="") as f:
         for r in csv.DictReader(f):
-            if r.get("source_group") == "false_semantic":
+            if r.get("source_group") == args.source_group:
                 false_rows.append(r)
 
     candidatos: list[tuple[dict[str, str], AnalisisPar]] = []
@@ -213,7 +216,7 @@ def main() -> None:
             dst.write_text(src.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
             copiados += 1
 
-    print(f"[info] false_semantic revisados: {len(false_rows)}")
+    print(f"[info] source_group revisado ({args.source_group}): {len(false_rows)}")
     print(f"[info] candidatos type_II: {len(candidatos)}")
     print(f"[info] no candidatos: {no_candidatos}")
     print(f"[info] errores lectura/tokenizacion: {errores}")
@@ -224,4 +227,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

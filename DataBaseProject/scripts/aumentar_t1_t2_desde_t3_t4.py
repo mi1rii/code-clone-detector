@@ -102,7 +102,7 @@ def main() -> None:
     args = parser.parse_args()
 
     base = args.dataset_dir.resolve()
-    tipos = base / "true_semantic_clones" / "py" / "tipos_de_clones"
+    tipos = base / "pares_clones" / "py" / "tipos_de_clones"
     t1 = tipos / "T1"
     t2 = tipos / "T2"
     t3 = tipos / "T3"
@@ -156,4 +156,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
