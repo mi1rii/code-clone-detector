@@ -54,6 +54,40 @@ Nota: tambien existe `pares_clones/.DS_Store`, es un archivo de sistema y se pue
 - `scripts/reporte_false_semantic_tipo2.csv`  
   Reporte CSV generado por el script de deteccion de tipo II.
 
+- `scripts/ejecutar_experimento_baker.py`  
+  Ejecuta comparacion reproducible entre:
+  - baseline lexico original
+  - baseline lexico + bloque Baker
+  Genera reportes en `reports/`.
+
+### Carpeta `src` (nueva integracion modular)
+- `src/baker_tokenizer.py`  
+  Tokenizacion Python usando `tokenize` (stdlib), filtrando tokens no significativos.
+- `src/baker_generalizer.py`  
+  Generalizacion lexico-estructural estilo Baker:
+  - identificadores -> `ID`
+  - numeros -> `NUM`
+  - strings -> `STR`
+  - keywords/operadores/estructura se conservan.
+- `src/baker_suffix_array.py`  
+  Implementacion de suffix array (prefix doubling) + LCP (Kasai).
+- `src/baker_similarity.py`  
+  Extrae matches contiguos comunes sobre tokens generalizados y calcula:
+  - `baker_similarity`
+  - `baker_common_length`
+  - `baker_longest_match`
+  - `baker_num_matches`
+  - `baker_coverage_a`
+  - `baker_coverage_b`
+- `src/baseline_pipeline.py`  
+  Pipeline reutilizable para:
+  - carga/limpieza/reconstruccion
+  - preprocesamiento y tokenizacion
+  - features baseline
+  - features Baker
+  - split por `problem_id`
+  - entrenamiento/evaluacion.
+
 ## 3) Requisitos
 Recomendado Python 3.10+.
 
@@ -93,6 +127,23 @@ python DataBaseProject/scripts/detectar_tipo2_en_false_semantic.py --help
 python DataBaseProject/scripts/reorganizar_tipos_clones.py --help
 python DataBaseProject/scripts/aumentar_t1_t2_desde_t3_t4.py --help
 ```
+
+Experimento comparativo baseline vs baseline+Baker:
+
+```bash
+python DataBaseProject/scripts/ejecutar_experimento_baker.py
+```
+
+Opcional (parametros):
+
+```bash
+python DataBaseProject/scripts/ejecutar_experimento_baker.py --seed 42 --estrategia-balanceo undersample --min-match-len 3
+```
+
+Tambien esta integrado **directamente en el notebook**:
+- `Baseline_Colab_DecisionTree.ipynb` incluye un bloque final Baker inline
+- ejecuta comparacion A/B y muestra tablas/reportes en celdas output
+- no requiere guardar resultados en archivos para ver metricas
 
 ## 6) Importante sobre rutas/carpetas
 En esta copia del proyecto los scripts y notebook funcionan sobre:
@@ -167,3 +218,46 @@ Razon: ya estaba balanceado, por eso no recorta datos.
 - Este dataset/flujo es solo Task tipo de clon (`is_clone=1`), no evalua deteccion binaria clon/no-clon.
 - Es un baseline con `DecisionTree`; sirve para referencia inicial, pero no necesariamente es el mejor modelo posible.
 - Conviene validar estabilidad repitiendo splits con distintas semillas o cross-validation por grupos.
+
+## 9) Extension Baker integrada (resultado actual)
+
+### 9.1 Que se agrego
+Se integro un bloque Baker modular sin eliminar features previas.  
+La matriz final combina:
+- Features baseline (13)
+- Features Baker (6 nuevas)
+- Total con Baker: 19 features.
+
+### 9.2 Evaluacion A/B con mismo split por `problem_id`
+Configuracion usada:
+- `seed_split = 142`
+- `estrategia_balanceo = undersample`
+- `min_match_len = 3`
+
+Resultados 4 clases (`type_I..type_IV`):
+- Baseline:
+  - `accuracy_test = 0.858730`
+  - `f1_macro_test = 0.857996`
+- Baseline + Baker:
+  - `accuracy_test = 0.902381`
+  - `f1_macro_test = 0.902341`
+
+Mejora neta:
+- `delta accuracy_test = +0.043651`
+- `delta f1_macro_test = +0.044345`
+
+### 9.3 Impacto por clase (TEST)
+- `type_I`: `delta f1 = -0.001590`
+- `type_II`: `delta f1 = +0.018926`
+- `type_III`: `delta f1 = +0.080526`
+- `type_IV`: `delta f1 = +0.079520`
+
+Interpretacion:
+- El bloque Baker ayuda especialmente en `type_III` y `type_IV`, que eran las clases mas dificiles en el baseline original.
+
+### 9.4 Artefactos generados
+- `reports/baseline_vs_baker_summary.csv`
+- `reports/baseline_vs_baker_per_class.csv`
+- `reports/features_baseline_plus_baker.csv` (dataset de features actualizado)
+- `reports/baseline_vs_baker_raw_metrics.json`
+- `reports/baseline_vs_baker_report.md`
