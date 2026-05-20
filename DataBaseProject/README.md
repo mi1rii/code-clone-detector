@@ -1,14 +1,19 @@
-﻿# DataBaseProject - Modelo Actual (Capa 1 Lexica)
+﻿# DataBaseProject - Modelo Actual (Capas 1 y 2)
 
 ## 1) Estado de esta branch
 Esta branch representa el **modelo actual** de clasificacion de clones de codigo en Python.
 
-En esta version, la **capa 1 lexica** ya esta integrada en el flujo principal del modelo:
+En esta version, el modelo integra:
+- **Capa 1 lexica**:
 - tokenizacion y normalizacion de codigo,
 - features lexicas clasicas (TF-IDF + similitudes de tokens),
 - similitud tipo Baker (tokenizacion generalizada + matches contiguos).
+- **Capa 2 estructural (AST)**:
+- rasgos sintacticos por snippet,
+- rasgos diferenciales por par,
+- similitudes estructurales entre snippets.
 
-No se usa narrativa historica ni comparaciones paralelas como flujo principal.
+No se usa narrativa historica como flujo principal.
 
 ## 2) Notebook principal
 - `Modelo_Actual_Capa1_Lexica.ipynb`
@@ -18,12 +23,12 @@ Este notebook contiene la narrativa completa del modelo actual:
 2. Dataset y reconstruccion de snippets
 3. Preprocesamiento
 4. Capa lexica (incluye Baker de forma nativa)
-5. Vector final de features del modelo
+5. Capa estructural AST y vector final de features
 6. Split por `problem_id`
-7. Entrenamiento del modelo
-8. Evaluacion del modelo
+7. Entrenamiento y comparacion de versiones del modelo
+8. Evaluacion comparativa
 9. Interpretacion
-10. Siguiente capa (AST, contexto, embeddings)
+10. Siguiente capa (contexto, embeddings)
 
 ## 3) Estructura de datos
 - `clone_pairs_dataset_metadata.csv`
@@ -54,10 +59,10 @@ Abrir `Modelo_Actual_Capa1_Lexica.ipynb` y ejecutar celdas en orden.
 ## 6) Notas tecnicas del modelo
 - Se mantiene split por grupos con `GroupShuffleSplit` usando `problem_id`.
 - El vectorizador TF-IDF se ajusta solo con train para evitar fuga de informacion.
-- Baker forma parte de la capa lexica del modelo (no es bloque opcional aparte).
+- Baker forma parte de la capa lexica del modelo.
+- AST forma parte de la capa estructural del modelo y se integra al vector final de features.
 
 ## 7) Continuidad del proyecto
-Con esta capa 1 establecida, los siguientes incrementos son:
-1. Capa AST
-2. Capa de contexto
-3. Capa de embeddings
+Con capas 1 y 2 establecidas, los siguientes incrementos son:
+1. Capa de contexto
+2. Capa de embeddings
