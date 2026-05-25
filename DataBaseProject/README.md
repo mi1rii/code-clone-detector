@@ -1,12 +1,12 @@
-﻿# DataBaseProject - Modelo Actual (Capas 1 y 2)
+# DataBaseProject - Modelo Actual (Arquitectura Jerarquica)
 
 ## 1) Estado actual
-Este repositorio contiene el modelo actual de clasificacion de clones de codigo en Python.
+Este repositorio contiene un sistema jerarquico de clasificacion de clones de codigo en Python.
 
 El flujo final integra:
-- Capa 1 lexica (tokenizacion, normalizacion, TF-IDF, similitudes por tokens y Baker simplificado).
-- Capa 2 estructural (rasgos sintacticos de estilo AST reducido por par de snippets).
-- Clasificador final Random Forest.
+- Etapa 1: regla deterministica para `type_I` sobre codigo normalizado.
+- Etapa 2: modelo Random Forest con features Baker para detectar `type_II` en los casos restantes.
+- Etapa 3: modelo Random Forest con Baker + AST reducido para separar `type_III` y `type_IV`.
 
 ## 2) Notebook principal
 - `Modelo_Actual_Capa1_Lexica.ipynb`
@@ -16,10 +16,10 @@ El notebook esta organizado por etapas:
 2. Dataset y reconstruccion de pares
 3. Preprocesamiento
 4. Capa 1 lexica
-5. Capa 2 estructural y vector final
+5. Capa 2 AST y funciones auxiliares
 6. Split por `problem_id`
-7. Entrenamiento
-8. Evaluacion e interpretacion
+7. Entrenamiento jerarquico por etapas
+8. Evaluacion de la arquitectura jerarquica
 
 ## 3) Estructura de datos actual
 - `pares_clones/T1`
@@ -36,6 +36,12 @@ Python 3.10+ recomendado.
 pip install pandas numpy scipy scikit-learn matplotlib jupyter
 ```
 
+Opcional para acelerar distancia de secuencias:
+
+```bash
+pip install rapidfuzz
+```
+
 ## 5) Ejecucion
 Desde la raiz del repo:
 
@@ -48,11 +54,14 @@ Abrir `Modelo_Actual_Capa1_Lexica.ipynb` y ejecutar celdas en orden (`Restart & 
 
 ## 6) Notas tecnicas
 - El split se hace por grupos con `GroupShuffleSplit` usando `problem_id` para evitar fuga de informacion.
-- TF-IDF se ajusta con train y se aplica a val/test.
-- El vector final combina capa lexica + capa estructural.
-- El foco de analisis esta en `type_III` y `type_IV` por su mayor dificultad.
+- El filtro de `type_I` es deterministico con firma canonica (sin comentarios/espacios/saltos) sobre codigo normalizado.
+- La etapa `type_II` usa exclusivamente features Baker enriquecidas (ratio, distancia y cobertura).
+- La etapa `type_III/type_IV` usa features Baker + AST reducido reforzado (diferencias relativas y absolutas).
+- No se usan embeddings ni modelos externos nuevos.
 
-## 7) Siguiente iteracion
-Con esta version estable, los siguientes incrementos propuestos son:
-1. Capa de contexto
-2. Capa de embeddings
+## 7) Resultado esperado
+Al ejecutar el notebook se generan:
+1. Metricas globales de validacion y test.
+2. Matriz de confusion de la arquitectura jerarquica.
+3. Metricas por clase con foco en `type_III` y `type_IV`.
+4. Importancia de features por etapa (`type_II` y `type_III/type_IV`).
