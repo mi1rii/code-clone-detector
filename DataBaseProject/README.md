@@ -1,43 +1,33 @@
 ﻿# DataBaseProject - Modelo Actual (Capas 1 y 2)
 
-## 1) Estado de esta branch
-Esta branch representa el **modelo actual** de clasificacion de clones de codigo en Python.
+## 1) Estado actual
+Este repositorio contiene el modelo actual de clasificacion de clones de codigo en Python.
 
-En esta version, el modelo integra:
-- **Capa 1 lexica**:
-- tokenizacion y normalizacion de codigo,
-- features lexicas clasicas (TF-IDF + similitudes de tokens),
-- similitud tipo Baker (tokenizacion generalizada + matches contiguos).
-- **Capa 2 estructural (AST)**:
-- rasgos sintacticos por snippet,
-- rasgos diferenciales por par,
-- similitudes estructurales entre snippets.
-
-No se usa narrativa historica como flujo principal.
+El flujo final integra:
+- Capa 1 lexica (tokenizacion, normalizacion, TF-IDF, similitudes por tokens y Baker simplificado).
+- Capa 2 estructural (rasgos sintacticos de estilo AST reducido por par de snippets).
+- Clasificador final Random Forest.
 
 ## 2) Notebook principal
 - `Modelo_Actual_Capa1_Lexica.ipynb`
 
-Este notebook contiene la narrativa completa del modelo actual:
-1. Introduccion del modelo
-2. Dataset y reconstruccion de snippets
+El notebook esta organizado por etapas:
+1. Configuracion e imports
+2. Dataset y reconstruccion de pares
 3. Preprocesamiento
-4. Capa lexica (incluye Baker de forma nativa)
-5. Capa estructural AST y vector final de features
+4. Capa 1 lexica
+5. Capa 2 estructural y vector final
 6. Split por `problem_id`
-7. Entrenamiento y comparacion de versiones del modelo
-8. Evaluacion comparativa
-9. Interpretacion
-10. Siguiente capa (contexto, embeddings)
+7. Entrenamiento
+8. Evaluacion e interpretacion
 
-## 3) Estructura de datos
-- `clone_pairs_dataset_metadata.csv`
-- `pares_clones/py/tipos_de_clones/T1`
-- `pares_clones/py/tipos_de_clones/T2`
-- `pares_clones/py/tipos_de_clones/T3`
-- `pares_clones/py/tipos_de_clones/T4`
+## 3) Estructura de datos actual
+- `pares_clones/T1`
+- `pares_clones/T2`
+- `pares_clones/T3`
+- `pares_clones/T4`
 
-Cada archivo `.py` contiene pares de snippets.
+Cada archivo `.py` contiene un par de snippets separados por bloques en blanco.
 
 ## 4) Requisitos
 Python 3.10+ recomendado.
@@ -47,22 +37,22 @@ pip install pandas numpy scipy scikit-learn matplotlib jupyter
 ```
 
 ## 5) Ejecucion
-Desde raiz del repo:
+Desde la raiz del repo:
 
 ```bash
 cd DataBaseProject
 jupyter notebook
 ```
 
-Abrir `Modelo_Actual_Capa1_Lexica.ipynb` y ejecutar celdas en orden.
+Abrir `Modelo_Actual_Capa1_Lexica.ipynb` y ejecutar celdas en orden (`Restart & Run All`).
 
-## 6) Notas tecnicas del modelo
-- Se mantiene split por grupos con `GroupShuffleSplit` usando `problem_id`.
-- El vectorizador TF-IDF se ajusta solo con train para evitar fuga de informacion.
-- Baker forma parte de la capa lexica del modelo.
-- AST forma parte de la capa estructural del modelo y se integra al vector final de features.
+## 6) Notas tecnicas
+- El split se hace por grupos con `GroupShuffleSplit` usando `problem_id` para evitar fuga de informacion.
+- TF-IDF se ajusta con train y se aplica a val/test.
+- El vector final combina capa lexica + capa estructural.
+- El foco de analisis esta en `type_III` y `type_IV` por su mayor dificultad.
 
-## 7) Continuidad del proyecto
-Con capas 1 y 2 establecidas, los siguientes incrementos son:
+## 7) Siguiente iteracion
+Con esta version estable, los siguientes incrementos propuestos son:
 1. Capa de contexto
 2. Capa de embeddings
